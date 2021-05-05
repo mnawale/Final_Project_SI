@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.900.0"
+    "aws-sdk": "^2.900.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1"
   }
 }

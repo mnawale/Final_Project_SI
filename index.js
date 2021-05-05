@@ -1,4 +1,9 @@
 var AWS = require('aws-sdk');
+const express = require('express');
+const fileUpload = require('express-fileUpload');
+const app = express();
+const port = 3000;
+app.use(fileUpload());
 AWS.config.update({region: 'us-east-1'});
 
 
@@ -46,4 +51,21 @@ client.detectLabels(params, function(err, response) {
       console.log("")
     }) // for response.labels
   } // if
+});
+app.use(express.static('public'))
+app.post('/upload',function(req,res){
+  console.log('File Uploading')
+  if (!req.files)
+  return res.static(400).send("File is not uploaded");
+
+  const sampleFile=req.files.sampleFile;
+
+  sampleFile.mv('/somewhere/file.jpg', function(err){
+    if (err)
+      return res.status(500).send(err);
+    res.send('File is uploaded')  
+  });
+});
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
 });
