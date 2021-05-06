@@ -16,42 +16,25 @@ const photo  = 'images-2.jpeg' // the name of file
  //region: "us-east-2"
 }) 
 var client = new AWS.Rekognition();
-var params = {
-  Image: {
-    S3Object: {
-      Bucket: bucket,
-      Name: photo
-    },
-  },
-  MaxLabels: 10
+function labelToImage(image){
+        var params = {
+        Image: {
+            Bytes: image.data.buffer
+        },
+        MaxLabels: 10
+    }
+
+    client.detectLabels(params, function(err, response) {
+        if (err) {
+            console.log(err, err.stack); // an error occurred
+        } else {
+            console.log(response)
+    
+        } // if
+    });
 }
-client.detectLabels(params, function(err, response) {
-  if (err) {
-    console.log(err, err.stack); // an error occurred
-  } else {
-    console.log(`Detected labels for: ${photo}`)
-    response.Labels.forEach(label => {
-      console.log(`Label:      ${label.Name}`)
-      console.log(`Confidence: ${label.Confidence}`)
-      console.log("Instances:")
-      label.Instances.forEach(instance => {
-        let box = instance.BoundingBox
-        console.log("  Bounding box:")
-        console.log(`    Top:        ${box.Top}`)
-        console.log(`    Left:       ${box.Left}`)
-        console.log(`    Width:      ${box.Width}`)
-        console.log(`    Height:     ${box.Height}`)
-        console.log(`  Confidence: ${instance.Confidence}`)
-      })
-      console.log("Parents:")
-      label.Parents.forEach(parent => {
-        console.log(`  ${parent.Name}`)
-      })
-      console.log("------------")
-      console.log("")
-    }) // for response.labels
-  } // if
-});
+
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -67,19 +50,19 @@ app.post('/label', async (req, res) => {
             });
         } else {
             
-            let image = req.files.image;
+            let uploaded_image = req.files.image;
+            uploaded_image.mv('./images/' + uploaded_image.name);
+            labelToImage(uploaded_image)
             
-           
-            image.mv('./images/' + image.name);
 
             //send response
             res.send({
                 status: true,
                 message: 'File is uploaded',
                 data: {
-                    name: image.name,
-                    mimetype: image.mimetype,
-                    size: image.size
+                    name: uploaded_image.name,
+                    mimetype: uploaded_image.mimetype,
+                    size: uploaded_image.size
                 }
             });
         }
