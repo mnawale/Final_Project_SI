@@ -1,10 +1,10 @@
 var AWS = require('aws-sdk');
 const express = require('express');
-const fileUpload = require('express-fileUpload');
+const fileUpload = require('express-fileupload');
 var bodyParser = require("body-parser");
-const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerJsdoc = require('swagger-jsdoc'); 
 const swaggerUi = require('swagger-ui-express');
-const {body, validationResult} = require('express-validator');
+
 const cors = require('cors');
 const app = express();
 const port = 3000;
@@ -15,16 +15,26 @@ app.use(cors());
 
 
 const options = {
-    swaggerDefinition: {
-        students: {
-            title: 'AWS Rekognition image labeling',
-            version: '2.1.1',
-            description: 'Student information '
-        },
-        host:'localhost:3000',
-        basePath: '/',
+  definition: {
+    
+    info: {
+      title: "Image Labelling using AWS Rekognition",
+      version: "0.1.0",
+      description:
+        "This API is useful to identify objects in the image. You can use this API to analyse objects in the image as per your business requirements. You can utilise AWS Rekognition without registering to AWS with the help of this API ",
+      contact: {
+        name: "Image Labelling",
+        url: "http://192.81.210.83:3000/",
+        email: "mnawale@uncc.edu",
+      },
     },
-    apis: ['./index.js'],
+    servers: [
+      {
+        url: "http://192.81.210.83:3000",
+      },
+    ],
+  },
+  apis: ["./index.js"],
 };
 const specs = swaggerJsdoc(options);
 app.use('/docs',swaggerUi.serve,swaggerUi.setup(specs));
@@ -60,7 +70,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 //This post method uploads image file and provide object labels 
-/**
+/** 
 * @swagger
 * /label/image:
 *   post:
